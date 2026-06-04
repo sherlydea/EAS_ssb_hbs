@@ -4,103 +4,148 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Siswa - SSB HBS</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center px-4">
 
-    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <div class="text-center mb-6">
-            <h1 class="text-3xl font-bold text-red-700">Login SSB HBS</h1>
-            <p class="text-gray-600 mt-2">Masuk ke akun siswa, pelatih, atau admin</p>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <style>
+        html, body{
+            min-height:100%;
+            overflow-y:auto;
+        }
+
+        .glass-card{
+            background:linear-gradient(
+                145deg,
+                rgba(26,6,8,.95),
+                rgba(12,3,5,.95)
+            );
+            border:1px solid rgba(212,175,55,.15);
+            box-shadow:0 20px 60px rgba(0,0,0,.45);
+        }
+    </style>
+</head>
+
+<body class="bg-[#080203] min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
+
+    <div class="absolute top-20 left-20 w-72 h-72 bg-[#8d001f]/20 blur-3xl rounded-full"></div>
+    <div class="absolute bottom-20 right-20 w-72 h-72 bg-[#d4af37]/10 blur-3xl rounded-full"></div>
+
+    <div class="relative z-10 w-full max-w-md">
+
+        <div class="text-center mb-8">
+            <h1 class="text-5xl font-black text-white">
+                SSB <span class="text-[#d4af37]">HBS</span>
+            </h1>
+
+            <p class="text-white/50 mt-2">
+                Sistem Informasi Sekolah Sepak Bola
+            </p>
         </div>
 
-        @if(session('error'))
-            <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
-                {{ session('error') }}
-            </div>
-        @endif
+        <div class="glass-card rounded-3xl p-8">
 
-        @if($errors->any())
-            <div class="bg-red-100 text-red-700 p-3 rounded mb-4">
-                <ul class="list-disc list-inside">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form action="{{ route('login.process') }}" method="POST">
-            @csrf
-
-            <div class="mb-4">
-                <label class="block mb-1 font-semibold text-gray-700">Email / Username</label>
-                <input
-                    type="text"
-                    name="email"
-                    value="{{ old('email') }}"
-                    class="w-full border border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-                    placeholder="Masukkan email atau username"
-                    required
-                >
-            </div>
-
-            <div class="mb-4">
-                <label class="block mb-1 font-semibold text-gray-700">Password</label>
-                <input
-                    type="password"
-                    name="password"
-                    id="password"
-                    class="w-full border border-gray-300 p-3 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
-                    placeholder="Masukkan password"
-                    required
-                >
-            </div>
-
-            <div class="mb-4 flex items-center justify-between">
-                <label class="flex items-center text-gray-700">
-                    <input type="checkbox" name="remember" class="mr-2">
-                    Remember Me
-                </label>
-
-                <button type="button" onclick="togglePassword()" class="text-sm text-red-600 hover:underline">
-                    Lihat Password
-                </button>
-            </div>
-
-            <button
-                type="submit"
-                class="w-full bg-red-600 text-white py-3 rounded hover:bg-red-700 font-semibold transition"
-            >
+            <h2 class="text-3xl font-bold text-[#d4af37] text-center mb-2">
                 Login
-            </button>
-        </form>
+            </h2>
 
-        <p class="text-center mt-5 text-gray-600">
-            Belum punya akun?
-            <a href="{{ route('pendaftaran.create') }}" class="text-red-600 font-semibold hover:underline">
-                Daftar
-            </a>
-        </p>
+            <p class="text-white/50 text-center mb-6">
+                Masuk ke akun siswa, pelatih, atau admin
+            </p>
 
-        <div class="text-center mt-4">
-            <a href="{{ route('home') }}" class="text-gray-500 hover:text-red-600 text-sm">
-                Kembali ke Beranda
-            </a>
+            @if(session('error'))
+                <div class="bg-red-500/20 border border-red-500 text-red-300 p-3 rounded-xl mb-4">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="bg-red-500/20 border border-red-500 text-red-300 p-3 rounded-xl mb-4">
+                    <ul class="list-disc list-inside">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form action="{{ route('login.process') }}" method="POST">
+                @csrf
+
+                <div class="mb-4">
+                    <label class="block mb-2 text-white/80 font-medium">
+                        Email / Username
+                    </label>
+
+                    <input
+                        type="text"
+                        name="email"
+                        value="{{ old('email') }}"
+                        placeholder="Masukkan email atau username"
+                        required
+                        class="w-full bg-[#0f0304] border border-[#4e1218] rounded-xl p-3 text-white focus:border-[#d4af37] focus:ring-2 focus:ring-[#d4af37]/20 outline-none"
+                    >
+                </div>
+
+                <div class="mb-4">
+                    <label class="block mb-2 text-white/80 font-medium">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        name="password"
+                        id="password"
+                        placeholder="Masukkan password"
+                        required
+                        class="w-full bg-[#0f0304] border border-[#4e1218] rounded-xl p-3 text-white focus:border-[#d4af37] focus:ring-2 focus:ring-[#d4af37]/20 outline-none"
+                    >
+                </div>
+
+                <div class="flex items-center justify-between mb-5">
+                    <label class="flex items-center text-white/70">
+                        <input type="checkbox" name="remember" class="mr-2">
+                        Remember Me
+                    </label>
+
+                    <button
+                        type="button"
+                        onclick="togglePassword()"
+                        class="text-[#d4af37] text-sm hover:underline"
+                    >
+                        Lihat Password
+                    </button>
+                </div>
+
+                <button
+                    type="submit"
+                    class="w-full bg-[#d4af37] text-[#120608] py-3 rounded-xl font-bold hover:bg-[#e6c04a] transition"
+                >
+                    Login
+                </button>
+            </form>
+
+            <p class="text-center mt-6 text-white/60">
+                Belum punya akun?
+                <a href="{{ route('pendaftaran.create') }}" class="text-[#d4af37] font-semibold hover:underline">
+                    Daftar
+                </a>
+            </p>
+
+            <div class="text-center mt-4">
+                <a href="{{ route('home') }}" class="text-white/40 hover:text-[#d4af37] text-sm">
+                    Kembali ke Beranda
+                </a>
+            </div>
+
         </div>
     </div>
 
-    <script>
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-            } else {
-                passwordInput.type = 'password';
-            }
-        }
-    </script>
+<script>
+function togglePassword(){
+    const input = document.getElementById('password');
+    input.type = input.type === 'password' ? 'text' : 'password';
+}
+</script>
 
 </body>
 </html>

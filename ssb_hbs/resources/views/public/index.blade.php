@@ -28,15 +28,29 @@
 <!-- NAVBAR -->
 <nav class="fixed top-0 left-0 w-full z-50 bg-[#080203]/85 backdrop-blur-xl border-b border-white/10">
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-        <a href="#beranda" class="flex items-center gap-3">
-            <div class="w-12 h-12 border border-[#d4af37] rounded-xl flex items-center justify-center text-[#d4af37] font-bold">
-                HBS
-            </div>
-            <div>
-                <h1 class="text-2xl font-extrabold">SSB <span class="text-[#d4af37]">HBS</span></h1>
-                <p class="text-xs text-white/50">Membentuk Potensi, Meraih Prestasi</p>
-            </div>
-        </a>
+    <a href="#beranda" class="flex items-center gap-3">
+
+    <!-- LOGO -->
+    <div class="w-14 h-14 flex items-center justify-center">
+        <img
+            src="{{ asset('images/logo.png') }}"
+            alt="Logo SSB HBS"
+            class="w-full h-full object-contain"
+        >
+    </div>
+
+    <!-- TEXT -->
+    <div>
+        <h1 class="text-2xl font-extrabold">
+            SSB <span class="text-[#d4af37]">HBS</span>
+        </h1>
+
+        <p class="text-xs text-white/50">
+            Membentuk Potensi, Meraih Prestasi
+        </p>
+    </div>
+
+</a>
 
         <div class="hidden md:flex items-center gap-7 text-sm font-semibold text-white/75">
             <a href="#beranda" class="hover:text-[#d4af37]">Beranda</a>
@@ -96,7 +110,7 @@
             </p>
 
             <div class="flex flex-wrap gap-4">
-                <a href="{{ route('pendaftaran.create') }}" class="bg-[#8d001f] border border-[#d4af37] px-8 py-4 rounded-xl font-bold hover:bg-[#a50028] transition">
+                <a href="{{ route('pendaftaran.create') }}" class="bg-[#8d001f] px-8 py-4 rounded-xl font-bold hover:bg-[#a50028] transition">
                     Daftar Sekarang
                 </a>
 

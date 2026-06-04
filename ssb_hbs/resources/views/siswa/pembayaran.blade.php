@@ -2,171 +2,307 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Pembayaran SPP - SSB HBS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembayaran Saya - SSB HBS</title>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-100 min-h-screen">
 
-<nav class="bg-red-700 text-white px-6 py-4 flex justify-between items-center">
-    <h1 class="font-bold text-xl">Pembayaran SPP</h1>
-    <a href="{{ route('siswa.dashboard') }}" class="bg-white text-red-700 px-4 py-2 rounded font-semibold">
-        Kembali
-    </a>
-</nav>
+<body class="bg-[#080203] text-white min-h-screen overflow-x-hidden">
 
-<main class="p-6 max-w-5xl mx-auto">
+    @include('siswa.partials.sidebar')
 
-    @if(session('success'))
-        <div class="bg-green-100 text-green-700 border border-green-300 p-4 rounded mb-6">
-            {{ session('success') }}
-        </div>
-    @endif
+    @php
+        $siswa = \DB::table('siswas')
+            ->where('user_id', auth()->user()->id)
+            ->first();
 
-    @if($errors->any())
-        <div class="bg-red-100 text-red-700 border border-red-300 p-4 rounded mb-6">
-            <ul class="list-disc list-inside">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+        $namaSiswa = $siswa->nama ?? auth()->user()->name ?? 'Siswa';
+        $kategori = $siswa->kategori_latihan ?? '-';
 
-    <div class="bg-white rounded shadow p-6 mb-6">
-        <h2 class="text-2xl font-bold text-red-700 mb-4">Informasi Rekening</h2>
+        $tagihanBulanIni = [
+            'bulan' => 'Juni 2026',
+            'jenis' => 'SPP Bulanan',
+            'nominal' => 150000,
+            'status' => 'Menunggu Konfirmasi',
+            'bukti' => 'bukti_spp_juni.jpg',
+            'tanggal_upload' => '04 Juni 2026',
+        ];
 
-        <div class="bg-yellow-50 border border-yellow-300 p-4 rounded">
-            <p><strong>Bank:</strong> BCA</p>
-            <p><strong>No Rekening:</strong> 1234567890</p>
-            <p><strong>Atas Nama:</strong> SSB HBS</p>
-            <p class="text-sm text-gray-600 mt-2">
-                Transfer sesuai tagihan SPP yang muncul, lalu upload bukti pembayaran.
-            </p>
-        </div>
-    </div>
+        $riwayatPembayaran = [
+            [
+                'bulan' => 'Mei 2026',
+                'jenis' => 'SPP Bulanan',
+                'nominal' => 150000,
+                'status' => 'Lunas',
+                'tanggal' => '10 Mei 2026',
+            ],
+            [
+                'bulan' => 'April 2026',
+                'jenis' => 'SPP Bulanan',
+                'nominal' => 150000,
+                'status' => 'Lunas',
+                'tanggal' => '08 April 2026',
+            ],
+            [
+                'bulan' => 'Maret 2026',
+                'jenis' => 'SPP Bulanan',
+                'nominal' => 150000,
+                'status' => 'Lunas',
+                'tanggal' => '09 Maret 2026',
+            ],
+        ];
+    @endphp
 
-    <div class="bg-white rounded shadow p-6 mb-8">
-        <h2 class="text-2xl font-bold text-red-700 mb-4">Tagihan Aktif</h2>
+    <main class="pt-28 min-h-screen px-6 py-10">
+        <div class="max-w-6xl mx-auto">
 
-        @if($tagihanAktif)
-            <div class="border rounded p-5 bg-gray-50 mb-5">
-                <p class="mb-2">
-                    <strong>Periode:</strong>
-                    {{ $tagihanAktif->bulan }} {{ $tagihanAktif->tahun }}
+            <section class="mb-10">
+                <p class="text-[#d4af37] font-bold tracking-widest uppercase mb-3">
+                    Pembayaran Saya
                 </p>
 
-                <p class="mb-2">
-                    <strong>Nominal:</strong>
-                    Rp{{ number_format($tagihanAktif->nominal, 0, ',', '.') }}
+                <h1 class="text-4xl md:text-5xl font-black leading-tight">
+                    Tagihan & Riwayat SPP
+                </h1>
+
+                <p class="text-white/60 mt-3 max-w-2xl">
+                    Informasi pembayaran siswa, status konfirmasi, dan riwayat pembayaran SPP.
                 </p>
+            </section>
 
-                <p class="mb-2">
-                    <strong>Status:</strong>
-                    <span class="px-3 py-1 rounded bg-red-100 text-red-700">
-                        {{ $tagihanAktif->status }}
-                    </span>
-                </p>
-            </div>
+            <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            <form action="{{ route('siswa.pembayaran.upload') }}" method="POST" enctype="multipart/form-data">
-                @csrf
+                <!-- TAGIHAN BULAN INI -->
+                <div class="lg:col-span-2 bg-[#140506] border border-[#4e1218] rounded-3xl p-7 shadow-2xl">
+                    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-5 mb-7">
+                        <div>
+                            <p class="text-[#d4af37] font-bold tracking-widest uppercase text-sm mb-2">
+                                Tagihan Aktif
+                            </p>
 
-                <input type="hidden" name="tagihan_spp_id" value="{{ $tagihanAktif->id }}">
+                            <h2 class="text-3xl font-black">
+                                {{ $tagihanBulanIni['jenis'] }}
+                            </h2>
 
-                <div class="mb-4">
-                    <label class="block font-semibold mb-2">Jumlah Pembayaran</label>
-                    <input
-                        type="text"
-                        value="Rp{{ number_format($tagihanAktif->nominal, 0, ',', '.') }}"
-                        class="w-full border rounded p-3 bg-gray-100 cursor-not-allowed"
-                        readonly
-                    >
-                </div>
+                            <p class="text-white/55 mt-2">
+                                Periode {{ $tagihanBulanIni['bulan'] }}
+                            </p>
+                        </div>
 
-                <div class="mb-4">
-                    <label class="block font-semibold mb-2">Upload Bukti Transfer</label>
-                    <input
-                        type="file"
-                        name="bukti_pembayaran"
-                        class="w-full border rounded p-3"
-                        required
-                    >
-                    <p class="text-sm text-gray-500 mt-1">
-                        Format: JPG, JPEG, PNG, atau PDF. Maksimal 2MB.
-                    </p>
-                </div>
+                        <span class="w-fit bg-yellow-500/15 text-yellow-300 px-4 py-2 rounded-full text-sm font-bold">
+                            {{ $tagihanBulanIni['status'] }}
+                        </span>
+                    </div>
 
-                <button type="submit" class="bg-red-700 text-white px-6 py-3 rounded font-semibold hover:bg-red-800">
-                    Kirim Bukti Pembayaran
-                </button>
-            </form>
-        @else
-            <div class="bg-green-50 border border-green-300 text-green-700 p-5 rounded">
-                Saat ini tidak ada tagihan SPP yang perlu dibayar. Silakan tunggu tagihan baru dari pihak sekolah.
-            </div>
-        @endif
-    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+                        <div class="bg-[#0f0304] border border-white/10 rounded-2xl p-5">
+                            <p class="text-white/45 text-sm mb-1">
+                                Nama Siswa
+                            </p>
 
-    <div class="bg-white rounded shadow p-6">
-        <h2 class="text-2xl font-bold text-red-700 mb-4">Riwayat Pembayaran SPP</h2>
+                            <p class="font-bold">
+                                {{ $namaSiswa }}
+                            </p>
+                        </div>
 
-        <table class="w-full border">
-            <thead class="bg-red-700 text-white">
-                <tr>
-                    <th class="border p-3">Periode</th>
-                    <th class="border p-3">Tanggal Bayar</th>
-                    <th class="border p-3">Nominal</th>
-                    <th class="border p-3">Status</th>
-                    <th class="border p-3">Bukti</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($riwayatSpp as $r)
-                    <tr>
-                        <td class="border p-3">{{ $r->bulan }} {{ $r->tahun }}</td>
-                        <td class="border p-3">
-                            {{ $r->tanggal_bayar ?? '-' }}
-                        </td>
-                        <td class="border p-3">
-                            Rp{{ number_format($r->nominal, 0, ',', '.') }}
-                        </td>
-                        <td class="border p-3">
-                            @if($r->status === 'Lunas')
-                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded">{{ $r->status }}</span>
-                            @elseif($r->status === 'Menunggu Verifikasi')
-                                <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded">{{ $r->status }}</span>
-                            @elseif($r->status === 'Ditolak')
-                                <span class="bg-red-100 text-red-700 px-3 py-1 rounded">{{ $r->status }}</span>
-                            @else
-                                <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded">{{ $r->status }}</span>
-                            @endif
-                        </td>
-                        <td class="border p-3">
-                            @if($r->bukti_pembayaran)
-                                <a
-                                    href="{{ asset('uploads/bukti_pembayaran/'.$r->bukti_pembayaran) }}"
-                                    target="_blank"
-                                    class="text-red-700 font-semibold hover:underline"
+                        <div class="bg-[#0f0304] border border-white/10 rounded-2xl p-5">
+                            <p class="text-white/45 text-sm mb-1">
+                                Kategori
+                            </p>
+
+                            <p class="font-bold text-[#d4af37]">
+                                {{ $kategori }}
+                            </p>
+                        </div>
+
+                        <div class="bg-[#0f0304] border border-white/10 rounded-2xl p-5">
+                            <p class="text-white/45 text-sm mb-1">
+                                Nominal Tagihan
+                            </p>
+
+                            <p class="text-3xl font-black">
+                                Rp{{ number_format($tagihanBulanIni['nominal'], 0, ',', '.') }}
+                            </p>
+                        </div>
+
+                        <div class="bg-[#0f0304] border border-white/10 rounded-2xl p-5">
+                            <p class="text-white/45 text-sm mb-1">
+                                Tanggal Upload Bukti
+                            </p>
+
+                            <p class="font-bold">
+                                {{ $tagihanBulanIni['tanggal_upload'] }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#0f0304] border border-white/10 rounded-2xl p-5 mb-6">
+                        <p class="text-[#d4af37] font-bold tracking-widest uppercase text-sm mb-3">
+                            Upload Bukti Pembayaran
+                        </p>
+
+                        <form action="#" method="POST" enctype="multipart/form-data">
+                            @csrf
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                                <div class="md:col-span-2">
+                                    <label class="block text-white/60 text-sm mb-2">
+                                        Pilih file bukti transfer
+                                    </label>
+
+                                    <input
+                                        type="file"
+                                        name="bukti_pembayaran"
+                                        class="w-full bg-[#140506] border border-[#4e1218] rounded-xl p-3 text-white file:bg-[#d4af37] file:text-[#120608] file:border-0 file:px-4 file:py-2 file:rounded-lg file:font-bold"
+                                    >
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    class="w-full bg-[#d4af37] text-[#120608] py-3 rounded-xl font-bold hover:bg-[#e6c04a] transition"
                                 >
-                                    Lihat Bukti
-                                </a>
-                            @else
-                                -
-                            @endif
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" class="border p-3 text-center text-gray-500">
-                            Belum ada riwayat tagihan SPP.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
+                                    Upload Bukti
+                                </button>
+                            </div>
+                        </form>
 
-</main>
+                        <p class="text-white/45 text-sm mt-4 leading-relaxed">
+                            Setelah bukti pembayaran dikirim, status akan menjadi
+                            <span class="text-yellow-300 font-bold">Menunggu Konfirmasi</span>
+                            sampai admin melakukan pengecekan.
+                        </p>
+                    </div>
+
+                    <div class="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-5">
+                        <p class="text-yellow-300 font-bold mb-2">
+                            Catatan Pembayaran
+                        </p>
+
+                        <p class="text-white/60 text-sm leading-relaxed">
+                            Pembayaran SPP dilakukan setiap bulan. Siswa tidak akan melihat tagihan baru sampai admin membuat tagihan periode berikutnya.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- RINGKASAN -->
+                <div class="bg-[#140506] border border-[#4e1218] rounded-3xl p-7 shadow-2xl">
+                    <p class="text-[#d4af37] font-bold tracking-widest uppercase text-sm mb-3">
+                        Ringkasan
+                    </p>
+
+                    <h2 class="text-2xl font-black mb-5">
+                        Status Pembayaran
+                    </h2>
+
+                    <div class="space-y-4">
+                        <div class="bg-[#0f0304] border border-white/10 rounded-2xl p-5">
+                            <p class="text-white/45 text-sm mb-1">
+                                SPP Bulan Ini
+                            </p>
+
+                            <p class="font-bold">
+                                {{ $tagihanBulanIni['bulan'] }}
+                            </p>
+                        </div>
+
+                        <div class="bg-[#0f0304] border border-white/10 rounded-2xl p-5">
+                            <p class="text-white/45 text-sm mb-1">
+                                Nominal
+                            </p>
+
+                            <p class="text-2xl font-black text-[#d4af37]">
+                                Rp{{ number_format($tagihanBulanIni['nominal'], 0, ',', '.') }}
+                            </p>
+                        </div>
+
+                        <div class="bg-[#0f0304] border border-white/10 rounded-2xl p-5">
+                            <p class="text-white/45 text-sm mb-1">
+                                Status
+                            </p>
+
+                            <p class="text-yellow-300 font-bold">
+                                {{ $tagihanBulanIni['status'] }}
+                            </p>
+                        </div>
+
+                        <div class="bg-[#0f0304] border border-white/10 rounded-2xl p-5">
+                            <p class="text-white/45 text-sm mb-1">
+                                Bukti
+                            </p>
+
+                            <p class="text-white/70 font-bold">
+                                {{ $tagihanBulanIni['bukti'] }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- RIWAYAT PEMBAYARAN -->
+            <section class="mt-6 bg-[#140506] border border-[#4e1218] rounded-3xl p-7 shadow-2xl">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                    <div>
+                        <p class="text-[#d4af37] font-bold tracking-widest uppercase text-sm mb-2">
+                            Riwayat Pembayaran
+                        </p>
+
+                        <h2 class="text-2xl font-black">
+                            Pembayaran Sebelumnya
+                        </h2>
+                    </div>
+
+                    <span class="w-fit bg-green-500/15 text-green-400 px-4 py-2 rounded-full text-sm font-bold">
+                        {{ count($riwayatPembayaran) }} Pembayaran Lunas
+                    </span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full min-w-[800px] text-left">
+                        <thead>
+                            <tr class="border-b border-white/10 text-white/60">
+                                <th class="py-4 px-4">Periode</th>
+                                <th class="py-4 px-4">Jenis Pembayaran</th>
+                                <th class="py-4 px-4">Nominal</th>
+                                <th class="py-4 px-4">Tanggal Bayar</th>
+                                <th class="py-4 px-4">Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="divide-y divide-white/10">
+                            @foreach($riwayatPembayaran as $item)
+                                <tr class="hover:bg-[#1a0608] transition">
+                                    <td class="py-4 px-4 font-bold">
+                                        {{ $item['bulan'] }}
+                                    </td>
+
+                                    <td class="py-4 px-4 text-white/70">
+                                        {{ $item['jenis'] }}
+                                    </td>
+
+                                    <td class="py-4 px-4 text-white/70">
+                                        Rp{{ number_format($item['nominal'], 0, ',', '.') }}
+                                    </td>
+
+                                    <td class="py-4 px-4 text-white/70">
+                                        {{ $item['tanggal'] }}
+                                    </td>
+
+                                    <td class="py-4 px-4">
+                                        <span class="bg-green-500/15 text-green-400 px-3 py-1.5 rounded-full text-xs font-bold">
+                                            {{ $item['status'] }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+    </main>
 
 </body>
 </html>
