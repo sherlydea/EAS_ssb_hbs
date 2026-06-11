@@ -22,5 +22,8 @@ class Pendaftaran extends Model
         'nama_orang_tua',
         'alamat',
         'status',
+        'foto_siswa',
+        'surat_izin_ortu',
+        'kartu_pelajar',
     ];
 }

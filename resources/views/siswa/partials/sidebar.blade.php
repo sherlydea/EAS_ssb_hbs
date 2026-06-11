@@ -1,19 +1,16 @@
-<!-- TOPBAR SISWA -->
 <header class="fixed top-0 left-0 w-full z-50 bg-[#1a0b0f]/95 backdrop-blur-xl border-b border-[#7a1025]/30 shadow-sm">
     <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
-        <!-- LOGO HBS -->
-       <a href="{{ url('/siswa/dashboard') }}" class="flex items-center gap-3">
-    <img src="{{ asset('images/loho-hbs.png') }}" alt="Logo HBS" class="w-12 h-14 ">
-    <div>
-        <h1 class="text-xl font-black leading-none text-white">
-            SSB <span class="text-[#d4af37]">HBS</span>
-        </h1>
-        <p class="text-xs text-white/45 mt-1">Portal Siswa</p>
-    </div>
-</a>
+        <a href="{{ url('/siswa/dashboard') }}" class="flex items-center gap-3">
+            <img src="{{ asset('images/loho-hbs.png') }}" alt="Logo HBS" class="w-12 h-14">
+            <div>
+                <h1 class="text-xl font-black leading-none text-white">
+                    SSB <span class="text-[#d4af37]">HBS</span>
+                </h1>
+                <p class="text-xs text-white/45 mt-1">Portal Siswa</p>
+            </div>
+        </a>
 
-        <!-- BUTTON MENU KANAN -->
         <button
             type="button"
             onclick="toggleSiswaMenu()"
@@ -26,19 +23,17 @@
     </div>
 </header>
 
-<!-- OVERLAY -->
 <div
     id="siswaOverlay"
     onclick="toggleSiswaMenu()"
     class="hidden fixed inset-0 bg-[#1a0b0f]/70 backdrop-blur-sm z-40"
 ></div>
 
-<!-- MENU SLIDE DARI KANAN -->
 <aside
     id="siswaMenu"
-    class="fixed top-0 right-0 h-screen w-[340px] max-w-[90%] bg-[#fff8e7] border-l border-[#7a1025]/25 z-50 translate-x-full transition-transform duration-300 shadow-2xl"
+    class="fixed top-0 right-0 h-screen w-[340px] max-w-[95%] bg-[#fff8e7] border-l border-[#7a1025]/25 z-50 translate-x-full transition-transform duration-300 shadow-2xl flex flex-col"
 >
-    <div class="p-6 border-b border-[#7a1025]/20 flex items-center justify-between bg-[#1a0b0f]">
+    <div class="p-6 border-b border-[#7a1025]/20 flex items-center justify-between bg-[#1a0b0f] flex-shrink-0">
         <div>
             <h2 class="text-2xl font-black text-[#fff8e7]">Menu Siswa</h2>
             <p class="text-[#fff8e7]/55 text-sm mt-1">Akses fitur portal siswa</p>
@@ -53,7 +48,7 @@
         </button>
     </div>
 
-    <nav class="p-5 space-y-3 pb-28">
+    <nav class="p-5 space-y-3 flex-1 overflow-y-auto blueprint-scroll">
         <a href="{{ url('/siswa/dashboard') }}" class="menu-siswa-link">Dashboard</a>
         <a href="{{ url('/siswa/profil') }}" class="menu-siswa-link">Profil Saya</a>
         <a href="{{ url('/siswa/jadwal-latihan') }}" class="menu-siswa-link">Latihan Saya</a>
@@ -63,7 +58,7 @@
         <a href="{{ url('/siswa/riwayat-absensi') }}" class="menu-siswa-link">Absensi Saya</a>
     </nav>
 
-    <div class="absolute bottom-0 left-0 w-full p-5 border-t border-[#7a1025]/20 bg-[#fff8e7]">
+    <div class="p-5 border-t border-[#7a1025]/20 bg-[#fff8e7] flex-shrink-0">
         <form action="{{ route('logout') }}" method="POST">
             @csrf
             <button
@@ -94,6 +89,18 @@
         border-color: #600018;
         color: #fff8e7;
         transform: translateX(-4px);
+    }
+
+    /* Kustomisasi Scrollbar Halus untuk Navigasi Tengah */
+    .blueprint-scroll::-webkit-scrollbar {
+        width: 4px;
+    }
+    .blueprint-scroll::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .blueprint-scroll::-webkit-scrollbar-thumb {
+        background: rgba(122, 16, 37, 0.15);
+        border-radius: 10px;
     }
 </style>
 
