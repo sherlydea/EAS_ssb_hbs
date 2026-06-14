@@ -20,22 +20,23 @@ class SiswaDashboardController extends Controller
 
         return view('siswa.profil', compact('siswa'));
     }
-public function jadwalLatihan()
-{
-    $siswaId = $this->getSiswaId();
 
-    $siswa = DB::table('siswas')
-        ->where('id', $siswaId)
-        ->first();
+    public function jadwalLatihan()
+    {
+        $siswaId = $this->getSiswaId();
 
-    $riwayatLatihan = DB::table('jadwal_latihans')
-        ->where('kategori_latihan', $siswa->kategori_latihan ?? 'U-12')
-        ->orderBy('hari', 'asc')
-        ->orderBy('jam_mulai', 'asc')
-        ->get();
+        $siswa = DB::table('siswas')
+            ->where('id', $siswaId)
+            ->first();
 
-    return view('siswa.jadwal-latihan', compact('siswa', 'riwayatLatihan'));
-}
+        $riwayatLatihan = DB::table('jadwal_latihans')
+            ->where('kategori_latihan', $siswa->kategori_latihan ?? 'U-10')
+            ->orderBy('hari', 'asc')
+            ->orderBy('jam_mulai', 'asc')
+            ->get();
+
+        return view('siswa.jadwal-latihan', compact('siswa', 'riwayatLatihan'));
+    }
 
     public function jadwalTurnamen()
     {
@@ -54,7 +55,7 @@ public function jadwalLatihan()
             $siswaId = DB::table('siswas')->insertGetId([
                 'user_id' => $user->id,
                 'nama' => $user->name,
-                'kategori_latihan' => 'U-12',
+                'kategori_latihan' => 'U-10',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -64,24 +65,25 @@ public function jadwalLatihan()
     }
 
     public function pembayaran()
-    {
-        $siswaId = $this->getSiswaId();
+{
+    $siswaId = $this->getSiswaId();
 
-        $tagihanAktif = DB::table('tagihan_spps')
-            ->where('siswa_id', $siswaId)
-            ->whereIn('status', ['Belum Bayar', 'Ditolak'])
-            ->orderBy('tahun', 'asc')
-            ->orderBy('id', 'asc')
-            ->first();
+    // Ambil SEMUA tagihan yang belum lunas
+    $tagihanAktif = DB::table('tagihan_spps')
+        ->where('siswa_id', $siswaId)
+        ->whereIn('status', ['Belum Bayar', 'Ditolak'])
+        ->orderBy('tahun', 'asc')
+        ->orderBy('id', 'asc')
+        ->get(); // Gunakan get() agar jadi collection
 
-        $riwayatSpp = DB::table('tagihan_spps')
-            ->where('siswa_id', $siswaId)
-            ->orderBy('tahun', 'desc')
-            ->orderBy('id', 'desc')
-            ->get();
+    $riwayatSpp = DB::table('tagihan_spps')
+        ->where('siswa_id', $siswaId)
+        ->orderBy('tahun', 'desc')
+        ->orderBy('id', 'desc')
+        ->get();
 
-        return view('siswa.pembayaran', compact('tagihanAktif', 'riwayatSpp'));
-    }
+    return view('siswa.pembayaran', compact('tagihanAktif', 'riwayatSpp'));
+}
 
     public function uploadPembayaran(Request $request)
     {
@@ -191,7 +193,7 @@ public function jadwalLatihan()
 
         return redirect()
             ->route('siswa.jersey')
-            ->with('success', 'Pesanan jersey berhasil dikirim. Silakan tunggu konfirmasi admin.');
+            ->with('success', 'Pesanan jersey berhasil dikirim. Silakan segera unggah bukti pembayaran Anda.');
     }
 
     public function uploadBuktiJersey(Request $request, $id)
@@ -213,10 +215,11 @@ public function jadwalLatihan()
                 ->withErrors(['bukti_pembayaran' => 'Pesanan jersey tidak ditemukan.']);
         }
 
-        if ($pesanan->status !== 'Diproses') {
+        // PERBAIKAN LOGIKA: Diubah dari 'Diproses' menjadi 'Menunggu' agar siswa bisa mengirim berkas transfer transfer awal
+        if ($pesanan->status !== 'Menunggu') {
             return redirect()
                 ->route('siswa.jersey')
-                ->withErrors(['bukti_pembayaran' => 'Upload bukti hanya bisa dilakukan setelah pesanan dikonfirmasi admin.']);
+                ->withErrors(['bukti_pembayaran' => 'Upload bukti pembayaran hanya bisa dilakukan untuk pesanan berstatus Menunggu.']);
         }
 
         $file = $request->file('bukti_pembayaran');
@@ -233,7 +236,7 @@ public function jadwalLatihan()
 
         return redirect()
             ->route('siswa.jersey')
-            ->with('success', 'Bukti pembayaran jersey berhasil diupload. Silakan tunggu konfirmasi admin.');
+            ->with('success', 'Bukti pembayaran jersey berhasil diupload. Silakan tunggu proses konveksi dan verifikasi admin.');
     }
 
     public function riwayatAbsensi()

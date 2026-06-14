@@ -2,6 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jersey Saya - SSB HBS</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -12,7 +13,6 @@
 <main class="pt-28 min-h-screen">
     <div class="max-w-7xl mx-auto">
 
-        <!-- Header -->
         <section class="mb-10">
             <p class="text-[#d4af37] font-bold tracking-widest uppercase mb-3">
                 Jersey Saya
@@ -23,17 +23,22 @@
             <p class="text-black/60 mt-3 max-w-2xl">
                 Pilih tipe jersey, ukuran, nama punggung, dan nomor punggung sesuai kebutuhan siswa.
             </p>
+            
+            @if(session('success'))
+                <div class="bg-green-500/15 text-green-600 border border-green-500/30 p-4 rounded-2xl mt-5">
+                    {{ session('success') }}
+                </div>
+            @endif
+
             @if(session('error'))
-                <div class="bg-red-500/15 text-red-600 border border-red-500/30 p-4 rounded-2xl mt-3">
+                <div class="bg-red-500/15 text-red-600 border border-red-500/30 p-4 rounded-2xl mt-5">
                     {{ session('error') }}
                 </div>
             @endif
         </section>
 
-        <!-- Daftar Jersey & Info Transfer -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
 
-            <!-- Daftar Jersey -->
             <div class="lg:col-span-2 bg-[#fff8f0] border border-[#4e1218] rounded-3xl p-7 shadow-2xl">
                 <p class="text-[#d4af37] font-bold tracking-widest uppercase text-sm mb-2">
                     Pilihan Jersey SSB HBS
@@ -60,7 +65,6 @@
                 </div>
             </div>
 
-            <!-- Info Transfer -->
             <div class="bg-[#fff8f0] border border-[#4e1218] rounded-3xl p-7 shadow-2xl">
                 <p class="text-[#d4af37] font-bold tracking-widest uppercase text-sm mb-2">
                     Informasi Transfer
@@ -80,13 +84,12 @@
                     </div>
                     <div class="bg-[#fff3e8] border border-[#d4af37]/30 rounded-2xl p-5">
                         <p class="font-bold mb-1">Keterangan Transfer</p>
-                        <p class="text-black/60">Tulis keterangan: Jersey - Nama Siswa agar admin mudah mengecek pembayaran.</p>
+                        <p class="text-black/60 text-xs">Tulis keterangan: Jersey - Nama Siswa agar admin mudah mengecek pembayaran.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Form Pemesanan Jersey -->
         <section class="bg-[#fff8f0] border border-[#4e1218] rounded-3xl p-7 shadow-2xl mb-10">
             <p class="text-[#d4af37] font-bold tracking-widest uppercase text-sm mb-2">
                 Form Pemesanan Jersey
@@ -124,15 +127,14 @@
                     </div>
                 </div>
                 <div class="mt-7">
-                    <button type="submit" class="bg-[#d4af37] text-[#120608] px-8 py-3 rounded-xl font-bold hover:bg-[#e6c04a]">
+                    <button type="submit" class="bg-[#d4af37] text-[#120608] px-8 py-3 rounded-xl font-bold hover:bg-[#e6c04a] transition">
                         Pesan Jersey
                     </button>
                 </div>
             </form>
         </section>
 
-        <!-- Riwayat Pesanan Jersey -->
-        <section>
+        <section class="mb-10">
             <h2 class="text-2xl font-black mb-5 text-[#d4af37]">Riwayat Pesanan Jersey</h2>
 
             <div class="space-y-5">
@@ -144,21 +146,32 @@
                         <p><span class="font-bold">Harga:</span> Rp{{ number_format($pesanan->harga,0,',','.') }}</p>
                         <p><span class="font-bold">Status:</span> {{ $pesanan->status }}</p>
 
-                        @if($pesanan->status === 'Dikonfirmasi Admin')
-                            <form action="{{ route('siswa.jersey.upload', $pesanan->id) }}" method="POST" enctype="multipart/form-data" class="mt-3">
+                        @if($pesanan->status == 'Menunggu' && empty($pesanan->bukti_pembayaran))
+                            <form action="{{ route('siswa.jersey.upload', $pesanan->id) }}" 
+                                  method="POST" 
+                                  enctype="multipart/form-data" 
+                                  class="mt-3 bg-[#fff3e8] border border-[#d4af37]/30 p-4 rounded-2xl max-w-md">
                                 @csrf
-                                <label class="block text-black/70 font-semibold mb-2">Upload Bukti Pembayaran</label>
-                                <input type="file" name="bukti_pembayaran" required class="text-black/70">
-                                <button type="submit" class="mt-2 bg-[#d4af37] text-[#120608] px-5 py-2 rounded-xl font-bold hover:bg-[#e6c04a]">
-                                    Upload
-                                </button>
+                                <label class="block text-black/70 font-semibold mb-2 text-sm">Upload Bukti Pembayaran</label>
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                                    <input type="file" name="bukti_pembayaran" required class="text-xs text-black/70">
+                                    <button type="submit" class="bg-[#d4af37] text-[#120608] px-5 py-2 rounded-xl font-bold text-xs hover:bg-[#e6c04a] transition whitespace-nowrap">
+                                        Upload Bukti
+                                    </button>
+                                </div>
                             </form>
+                        @elseif($pesanan->status == 'Menunggu' && !empty($pesanan->bukti_pembayaran))
+                            <p class="mt-2 text-yellow-700 text-sm italic">⏳ Bukti transfer terkirim. Menunggu proses verifikasi admin.</p>
+                        @elseif($pesanan->status == 'Diproses')
+                            <p class="mt-2 text-blue-700 text-sm font-semibold">🧵 Pembayaran terverifikasi! Jersey sedang masuk antrean proses produksi konveksi.</p>
+                        @elseif($pesanan->status == 'Selesai')
+                            <p class="mt-2 text-green-700 text-sm font-bold">✅ Produksi selesai! Atribut jersey sudah siap diambil di kantor sekretariat SSB HBS.</p>
                         @else
-                            <p class="mt-2 text-yellow-700 text-sm">Menunggu konfirmasi admin sebelum upload bukti.</p>
+                            <p class="mt-2 text-red-700 text-sm">❌ Transfer ditolak. Silakan hubungi admin SSB HBS.</p>
                         @endif
                     </div>
                 @empty
-                    <p class="text-black/60">Belum ada pesanan jersey.</p>
+                    <p class="text-black/60 bg-[#fff8f0] p-6 rounded-3xl text-center border border-[#4e1218]/10 font-medium">Belum ada riwayat pesanan jersey.</p>
                 @endforelse
             </div>
         </section>

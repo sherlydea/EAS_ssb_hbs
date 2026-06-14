@@ -311,7 +311,7 @@
                         <label class="block mb-2 font-semibold text-[#fff8e7]">
                             Ijazah/Kartu Pelajar
                         </label>
-                        <input type="file" name="dokumen_pendukung" data-label="Ijazah atau Kartu Pelajar"
+                        <input type="file" name="kartu_pelajar" data-label="Ijazah atau Kartu Pelajar"
                             class="form-input" accept=".pdf,.jpg,.jpeg,.png" required>
                         <p class="text-[#fff8e7]/50 text-xs mt-2">Format: PDF/JPG/PNG.</p>
                     </div>
