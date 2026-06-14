@@ -4,19 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SPP Saya - SSB HBS</title>
-
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-[#f5f0e6] text-black min-h-screen overflow-x-hidden px-6 py-10">
+<body class="bg-[#f5f0e6] text-black min-h-screen">
 
     @include('siswa.partials.sidebar')
 
     @php
-        $siswa = \DB::table('siswas')
-            ->where('user_id', auth()->user()->id)
-            ->first();
-
+        $siswa = \DB::table('siswas')->where('user_id', auth()->user()->id)->first();
         $namaSiswa = $siswa->nama ?? auth()->user()->name ?? 'Siswa';
         $kategori = $siswa->kategori_latihan ?? '-';
         $rekeningBank = '1234567890';
@@ -32,245 +28,96 @@
         }
     @endphp
 
-    <main class="pt-28 min-h-screen">
-        <div class="max-w-7xl mx-auto">
+    <main class="pt-28 pb-16 min-h-screen">
+        <div class="max-w-7xl mx-auto px-6">
 
-            <!-- Header -->
-            <section class="mb-10">
-                <p class="text-[#d4af37] font-bold tracking-widest uppercase mb-3">
-                    SPP Saya
-                </p>
-
-                <h1 class="text-4xl md:text-5xl font-black leading-tight">
-                    Tagihan & Riwayat SPP
-                </h1>
-
-                <p class="text-black/60 mt-3 max-w-2xl">
-                    Informasi tagihan aktif, upload bukti transfer, dan pantau riwayat pembayaran.
-                </p>
+            <section class="mb-12">
+                <p class="text-[#d4af37] font-bold tracking-widest uppercase mb-3 text-sm">SPP Saya</p>
+                <h1 class="text-4xl md:text-5xl font-black leading-tight">Tagihan & Riwayat SPP</h1>
+                <p class="text-black/60 mt-3 max-w-2xl">Informasi tagihan aktif, upload bukti transfer, dan pantau riwayat pembayaran.</p>
             </section>
 
-            <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                <!-- Tagihan Aktif -->
-                <div class="lg:col-span-2 bg-[#fff8f0] border border-[#4e1218] rounded-3xl p-7 shadow-2xl">
-                    @if($tagihanAktif)
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
-                            <div class="bg-[#fff3e8] border border-[#d4af37]/30 rounded-2xl p-5">
-                                <p class="text-black/50 text-sm mb-1">Nama Siswa</p>
-                                <p class="font-bold">{{ $namaSiswa }}</p>
+                <div class="lg:col-span-2 space-y-6">
+                    @forelse($tagihanAktif as $tagihan)
+                        <div class="bg-[#fff8f0] border border-[#4e1218] rounded-3xl p-8 shadow-xl">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                                <div class="bg-[#fff3e8] border border-[#d4af37]/30 rounded-2xl p-5">
+                                    <p class="text-black/50 text-xs uppercase font-bold mb-1">Periode</p>
+                                    <p class="font-bold text-lg">{{ $tagihan->bulan }} {{ $tagihan->tahun }}</p>
+                                </div>
+                                <div class="bg-[#fff3e8] border border-[#d4af37]/30 rounded-2xl p-5">
+                                    <p class="text-black/50 text-xs uppercase font-bold mb-1">Nominal</p>
+                                    <p class="text-3xl font-black">Rp{{ number_format($tagihan->nominal,0,',','.') }}</p>
+                                </div>
                             </div>
 
-                            <div class="bg-[#fff3e8] border border-[#d4af37]/30 rounded-2xl p-5">
-                                <p class="text-black/50 text-sm mb-1">Kategori</p>
-                                <p class="font-bold text-[#d4af37]">{{ $kategori }}</p>
-                            </div>
-
-                            <div class="bg-[#fff3e8] border border-[#d4af37]/30 rounded-2xl p-5">
-                                <p class="text-black/50 text-sm mb-1">Periode</p>
-                                <p class="font-bold">{{ $tagihanAktif->bulan }} {{ $tagihanAktif->tahun }}</p>
-                            </div>
-
-                            <div class="bg-[#fff3e8] border border-[#d4af37]/30 rounded-2xl p-5">
-                                <p class="text-black/50 text-sm mb-1">Nominal Tagihan</p>
-                                <p class="text-3xl font-black">Rp{{ number_format($tagihanAktif->nominal,0,',','.') }}</p>
-                            </div>
-
-                            <div class="bg-[#fff3e8] border border-[#d4af37]/30 rounded-2xl p-5">
-                                <p class="text-black/50 text-sm mb-1">No. Rek / Atas Nama</p>
-                                <p class="font-bold">{{ $rekeningBank }} / {{ $atasNama }}</p>
-                            </div>
-
-                            <div class="bg-[#fff3e8] border border-[#d4af37]/30 rounded-2xl p-5">
-                                <p class="text-black/50 text-sm mb-1">Tanggal Bayar / Upload</p>
-                                <p class="font-bold">
-                                    {{ $tagihanAktif->tanggal_bayar ? \Carbon\Carbon::parse($tagihanAktif->tanggal_bayar)->format('d M Y H:i') : '-' }}
-                                </p>
-                            </div>
-
-                            <div class="bg-[#fff3e8] border border-[#d4af37]/30 rounded-2xl p-5">
-                                <p class="text-black/50 text-sm mb-1">Bukti Pembayaran</p>
-                                @if($tagihanAktif->bukti_pembayaran)
-                                    <a href="{{ asset('uploads/bukti_pembayaran/' . $tagihanAktif->bukti_pembayaran) }}"
-                                       target="_blank"
-                                       class="text-[#d4af37] font-bold hover:underline">
-                                        Lihat Bukti
-                                    </a>
-                                @else
-                                    <p class="font-bold">Belum upload</p>
-                                @endif
-                            </div>
+                            <form action="{{ route('siswa.pembayaran.upload') }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <input type="hidden" name="tagihan_spp_id" value="{{ $tagihan->id }}">
+                                <label class="block text-sm font-bold mb-3 uppercase tracking-wider text-[#4e1218]">Upload Bukti Transfer</label>
+                                <div class="flex gap-4">
+                                    <input type="file" name="bukti_pembayaran" required class="flex-1 bg-white p-3 rounded-xl border border-black/10 focus:outline-none focus:ring-2 focus:ring-[#d4af37]">
+                                    <button type="submit" class="bg-[#d4af37] px-8 py-3 rounded-xl font-bold hover:bg-[#c49c2d] transition">Upload</button>
+                                </div>
+                            </form>
                         </div>
-
-                        @if(in_array($tagihanAktif->status, ['Belum Bayar','Ditolak']))
-                            <div class="bg-[#fff3e8] border border-[#d4af37]/30 rounded-2xl p-5 mb-6">
-                                <p class="text-[#d4af37] font-bold tracking-widest uppercase text-sm mb-3">
-                                    Upload Bukti Pembayaran
-                                </p>
-
-                                <form action="{{ route('siswa.pembayaran.upload') }}" method="POST" enctype="multipart/form-data">
-                                    @csrf
-                                    <input type="hidden" name="tagihan_spp_id" value="{{ $tagihanAktif->id }}">
-
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                                        <div class="md:col-span-2">
-                                            <label class="block text-black/60 text-sm mb-2">
-                                                Pilih file bukti transfer
-                                            </label>
-
-                                            <input type="file"
-                                                name="bukti_pembayaran"
-                                                class="w-full bg-[#fff3e8] border border-[#d4af37] rounded-xl p-3 text-black
-                                                file:bg-[#d4af37] file:text-[#120608] file:border-0 file:px-4 file:py-2 file:rounded-lg file:font-bold"
-                                                required
-                                            >
-                                        </div>
-
-                                        <button type="submit"
-                                            class="w-full bg-[#d4af37] text-[#120608] py-3 rounded-xl font-bold hover:bg-[#e6c04a] transition">
-                                            Upload Bukti
-                                        </button>
-                                    </div>
-                                </form>
-
-                                <p class="text-black/60 text-sm mt-4 leading-relaxed">
-                                    Setelah bukti dikirim, status akan menjadi
-                                    <span class="text-yellow-700 font-bold">Menunggu Verifikasi</span>
-                                    sampai admin melakukan pengecekan.
-                                </p>
-                            </div>
-                        @endif
-
-                    @else
-                        <div class="bg-[#fff3e8] border border-[#d4af37]/30 rounded-2xl p-6">
-                            <p class="text-black/60 font-bold mb-2">
-                                Belum ada tagihan aktif.
-                            </p>
-                            <p class="text-black/50 text-sm leading-relaxed">
-                                Tagihan SPP akan muncul setelah admin membuat tagihan.
-                            </p>
+                    @empty
+                        <div class="bg-[#fff8f0] border border-[#4e1218] rounded-3xl p-8 text-center">
+                            <p class="font-bold text-black/60">Tidak ada tagihan aktif saat ini.</p>
                         </div>
-                    @endif
+                    @endforelse
                 </div>
 
-                <!-- Ringkasan -->
-                <div class="bg-[#fff8f0] border border-[#4e1218] rounded-3xl p-7 shadow-2xl">
-                    <p class="text-[#d4af37] font-bold tracking-widest uppercase text-sm mb-3">
-                        Ringkasan
-                    </p>
-
-                    <div class="space-y-4">
-                        <div class="bg-[#fff3e8] border border-[#d4af37]/30 rounded-2xl p-5">
-                            <p class="text-black/50 text-sm mb-1">Nama Siswa</p>
-                            <p class="font-bold">{{ $namaSiswa }}</p>
+                <div class="bg-[#fff8f0] border border-[#4e1218] rounded-3xl p-8 h-fit shadow-lg">
+                    <p class="font-bold uppercase tracking-widest text-[#d4af37] text-sm mb-6">Ringkasan Data</p>
+                    <div class="space-y-5">
+                        <div class="border-b border-black/10 pb-4">
+                            <p class="text-black/50 text-xs uppercase font-bold mb-1">Nama Siswa</p>
+                            <p class="font-bold text-lg">{{ $namaSiswa }}</p>
                         </div>
-
-                        <div class="bg-[#fff3e8] border border-[#d4af37]/30 rounded-2xl p-5">
-                            <p class="text-black/50 text-sm mb-1">Kategori</p>
-                            <p class="font-bold text-[#d4af37]">{{ $kategori }}</p>
+                        <div class="border-b border-black/10 pb-4">
+                            <p class="text-black/50 text-xs uppercase font-bold mb-1">Kategori</p>
+                            <p class="font-bold text-lg text-[#d4af37]">{{ $kategori }}</p>
                         </div>
-
-                        <div class="bg-[#fff3e8] border border-[#d4af37]/30 rounded-2xl p-5">
-                            <p class="text-black/50 text-sm mb-1">Tagihan Aktif</p>
-                            <p class="font-bold">
-                                {{ $tagihanAktif ? $tagihanAktif->bulan . ' ' . $tagihanAktif->tahun : 'Tidak Ada' }}
-                            </p>
-                        </div>
-
-                        <div class="bg-[#fff3e8] border border-[#d4af37]/30 rounded-2xl p-5">
-                            <p class="text-black/50 text-sm mb-1">Status</p>
-                            <p class="font-bold {{ $tagihanAktif && $tagihanAktif->status === 'Lunas' ? 'text-green-700' : ($tagihanAktif && $tagihanAktif->status === 'Ditolak' ? 'text-red-600' : 'text-yellow-700') }}">
-                                {{ $tagihanAktif ? $tagihanAktif->status : 'Aman' }}
-                            </p>
-                        </div>
-
-                        <div class="bg-[#fff3e8] border border-[#d4af37]/30 rounded-2xl p-5">
-                            <p class="text-black/50 text-sm mb-1">No. Rek / Atas Nama</p>
-                            <p class="font-bold">{{ $rekeningBank }} / {{ $atasNama }}</p>
+                        <div>
+                            <p class="text-black/50 text-xs uppercase font-bold mb-1">Info Rekening</p>
+                            <p class="font-bold text-lg">{{ $rekeningBank }}</p>
+                            <p class="text-sm text-black/60">{{ $atasNama }}</p>
                         </div>
                     </div>
                 </div>
-
             </section>
 
-            <!-- Riwayat SPP -->
-            <section class="mt-6 bg-[#fff8f0] border border-[#4e1218] rounded-3xl p-7 shadow-2xl">
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-                    <div>
-                        <p class="text-[#d4af37] font-bold tracking-widest uppercase text-sm mb-2">
-                            Riwayat SPP
-                        </p>
-
-                        <h2 class="text-2xl font-black">
-                            Riwayat Tagihan dan Pembayaran
-                        </h2>
-                    </div>
-
-                    <span class="w-fit bg-[#d4af37]/15 text-[#d4af37] px-4 py-2 rounded-full text-sm font-bold">
-                        {{ $riwayatSpp->count() }} Data
-                    </span>
-                </div>
-
+            <section class="mt-12 bg-[#fff8f0] border border-[#4e1218] rounded-3xl p-8 shadow-xl">
+                <h2 class="text-2xl font-black mb-6">Riwayat Pembayaran</h2>
                 <div class="overflow-x-auto">
-                    <table class="w-full min-w-[900px] text-left">
-                        <thead class="bg-[#8d001f]/20">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-[#4e1218]/5">
                             <tr>
-                                <th class="py-4 px-4">Periode</th>
-                                <th class="py-4 px-4">Nominal</th>
-                                <th class="py-4 px-4">Tanggal Bayar</th>
-                                <th class="py-4 px-4">Bukti</th>
-                                <th class="py-4 px-4">Status</th>
+                                <th class="p-4 text-xs uppercase tracking-wider">Periode</th>
+                                <th class="p-4 text-xs uppercase tracking-wider">Nominal</th>
+                                <th class="p-4 text-xs uppercase tracking-wider">Status</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-[#4e1218]/20">
-                            @forelse($riwayatSpp as $item)
-                                <tr class="hover:bg-[#1a0608] transition">
-                                    <td class="py-4 px-4 font-bold">
-                                        {{ $item->bulan }} {{ $item->tahun }}
-                                    </td>
-
-                                    <td class="py-4 px-4 text-black/70">
-                                        Rp{{ number_format($item->nominal, 0, ',', '.') }}
-                                    </td>
-
-                                    <td class="py-4 px-4 text-black/70">
-                                        {{ $item->tanggal_bayar ? \Carbon\Carbon::parse($item->tanggal_bayar)->format('d M Y H:i') : '-' }}
-                                    </td>
-
-                                    <td class="py-4 px-4">
-                                        @if($item->bukti_pembayaran)
-                                            <a
-                                                href="{{ asset('uploads/bukti_pembayaran/' . $item->bukti_pembayaran) }}"
-                                                target="_blank"
-                                                class="text-[#d4af37] font-bold hover:underline"
-                                            >
-                                                Lihat Bukti
-                                            </a>
-                                        @else
-                                            <span class="text-black/45">-</span>
-                                        @endif
-                                    </td>
-
-                                    <td class="py-4 px-4">
-                                        <span class="{{ badgeSppClass($item->status) }} px-3 py-1.5 rounded-full text-xs font-bold">
-                                            {{ $item->status }}
-                                        </span>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="py-8 px-4 text-center text-black/50">
-                                        Belum ada riwayat SPP.
-                                    </td>
-                                </tr>
-                            @endforelse
+                        <tbody class="divide-y divide-black/10">
+                            @foreach($riwayatSpp as $item)
+                            <tr>
+                                <td class="p-4 font-bold">{{ $item->bulan }} {{ $item->tahun }}</td>
+                                <td class="p-4 font-medium">Rp{{ number_format($item->nominal, 0, ',', '.') }}</td>
+                                <td class="p-4">
+                                    <span class="{{ badgeSppClass($item->status) }} px-4 py-1.5 rounded-full text-xs font-bold">
+                                        {{ $item->status }}
+                                    </span>
+                                </td>
+                            </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
             </section>
-
         </div>
     </main>
-
 </body>
 </html>

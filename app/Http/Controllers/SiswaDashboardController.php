@@ -65,24 +65,25 @@ class SiswaDashboardController extends Controller
     }
 
     public function pembayaran()
-    {
-        $siswaId = $this->getSiswaId();
+{
+    $siswaId = $this->getSiswaId();
 
-        $tagihanAktif = DB::table('tagihan_spps')
-            ->where('siswa_id', $siswaId)
-            ->whereIn('status', ['Belum Bayar', 'Ditolak'])
-            ->orderBy('tahun', 'asc')
-            ->orderBy('id', 'asc')
-            ->first();
+    // Ambil SEMUA tagihan yang belum lunas
+    $tagihanAktif = DB::table('tagihan_spps')
+        ->where('siswa_id', $siswaId)
+        ->whereIn('status', ['Belum Bayar', 'Ditolak'])
+        ->orderBy('tahun', 'asc')
+        ->orderBy('id', 'asc')
+        ->get(); // Gunakan get() agar jadi collection
 
-        $riwayatSpp = DB::table('tagihan_spps')
-            ->where('siswa_id', $siswaId)
-            ->orderBy('tahun', 'desc')
-            ->orderBy('id', 'desc')
-            ->get();
+    $riwayatSpp = DB::table('tagihan_spps')
+        ->where('siswa_id', $siswaId)
+        ->orderBy('tahun', 'desc')
+        ->orderBy('id', 'desc')
+        ->get();
 
-        return view('siswa.pembayaran', compact('tagihanAktif', 'riwayatSpp'));
-    }
+    return view('siswa.pembayaran', compact('tagihanAktif', 'riwayatSpp'));
+}
 
     public function uploadPembayaran(Request $request)
     {

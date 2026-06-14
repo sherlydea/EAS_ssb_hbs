@@ -57,6 +57,7 @@
     border-radius:999px;
     font-weight:700;
     transition: 0.2s;
+    display: inline-block;
 }
 .alert-btn:hover {
     background: #b5922e;
@@ -114,7 +115,7 @@
 }
 
 .search-box{
-    width:350px; /* Diperkecil sedikit agar porsi tombol filter lebih luas */
+    width:350px;
 }
 
 .search-box input{
@@ -127,25 +128,24 @@
     font-size: 14px;
 }
 
-/* PERBAIKAN UTAMA: Menu Tab Filter Dibuat Ramping & Sebaris */
 .filter-menu{
     display:flex;
     gap:8px;
-    flex-wrap:nowrap; /* Mengunci agar tidak pecah jadi 2 baris */
+    flex-wrap:nowrap;
     align-items: center;
 }
 
 .filter-menu a{
     text-decoration:none;
-    padding: 8px 16px;       /* Padding dikecilkan agar proporsional */
+    padding: 8px 16px;
     border-radius:999px;
     color:#444;
     background:#F5F1E8;
-    font-size: 13px;         /* Ukuran font disamakan dengan standar tombol aksi */
-    font-weight:700;         /* Ketebalan font disamakan */
+    font-size: 13px;
+    font-weight:700;
     text-align:center;
     transition: 0.2s;
-    white-space: nowrap;     /* Mencegah teks melar ke bawah */
+    white-space: nowrap;
 }
 
 .filter-menu .active{
@@ -157,40 +157,13 @@
     background: #e2dbcf;
 }
 
-/* Aturan Konstruksi Tabel Proporsional Rapat */
-table{
-    width:100%;
-    border-collapse:collapse;
-}
+table{ width:100%; border-collapse:collapse; }
+thead{ background:#F5F1E8; }
+table th { padding: 12px 16px; text-align: left; font-size: 13px; font-weight: 700; color:#1A2238; }
+table td { padding: 12px 16px; border-top:1px solid #eee; font-size:14px; color:#333; }
+tbody tr{ transition:.2s; }
+tbody tr:hover{ background:#fafafa; }
 
-thead{
-    background:#F5F1E8;
-}
-
-table th {
-    padding: 12px 16px;
-    text-align: left;
-    font-size: 13px;
-    font-weight: 700;
-    color:#1A2238;
-}
-
-table td {
-    padding: 12px 16px;
-    border-top:1px solid #eee;
-    font-size:14px;
-    color:#333;
-}
-
-tbody tr{
-    transition:.2s;
-}
-
-tbody tr:hover{
-    background:#fafafa;
-}
-
-/* Standarisasi Komponen Badges */
 .badge-status, .badge, .kategori-badge {
     padding: 6px 12px;
     font-size: 12px;
@@ -204,68 +177,24 @@ tbody tr:hover{
 .badge-lunas{ background:#D4EDDA; color:#155724; }
 .badge-ditolak{ background:#F8D7DA; color:#721C24; }
 
-/* Standarisasi Kelompok Tombol Aksi */
-.action-buttons {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    align-items: center;
-}
+.action-buttons { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 
 .verify-btn, .detail-btn {
-    border: none;
-    padding: 8px 16px;
-    font-size: 13px;
-    font-weight: 700;
-    border-radius: 10px;
-    white-space: nowrap;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: 0.2s;
-    text-decoration: none;
-    box-sizing: border-box;
+    border: none; padding: 8px 16px; font-size: 13px; font-weight: 700; border-radius: 10px;
+    white-space: nowrap; display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: 0.2s; text-decoration: none; box-sizing: border-box;
 }
 
-.verify-btn {
-    background: #2E7D32;
-    color: white;
-}
-.verify-btn:hover { 
-    background: #1B5E20; 
-    color: white; 
-}
+.verify-btn { background: #2E7D32; color: white; }
+.verify-btn:hover { background: #1B5E20; color: white; }
 
-.detail-btn {
-    background: #F5EFE7;
-    border: 1px solid rgba(122, 16, 37, 0.15);
-    color: #1A2238;
-}
-.detail-btn:hover { 
-    background: #e2dbcf; 
-}
+.detail-btn { background: #F5EFE7; border: 1px solid rgba(122, 16, 37, 0.15); color: #1A2238; }
+.detail-btn:hover { background: #e2dbcf; }
 
-.table-info{
-    padding:0 25px 15px;
-    color:#777;
-    font-size:13px;
-    font-weight: 500;
-}
+.table-info{ padding:0 25px 15px; color:#777; font-size:13px; font-weight: 500; }
+.empty-state{ text-align:center; padding:50px 20px; color:#888; }
+.empty-state h4{ margin-top:15px; margin-bottom:10px; color:#444; }
 
-.empty-state{
-    text-align:center;
-    padding:50px 20px;
-    color:#888;
-}
-
-.empty-state h4{
-    margin-top:15px;
-    margin-bottom:10px;
-    color:#444;
-}
-
-/* Responsive Handling */
 @media(max-width:1200px){
     .stats-grid{ grid-template-columns:repeat(2,1fr); }
     .filter-area{ flex-direction:column; align-items:stretch; }
@@ -295,6 +224,13 @@ tbody tr:hover{
     </div>
     <a href="{{ route('admin.pembayaran.index',['status'=>'Menunggu Verifikasi']) }}" class="alert-btn">
         Verifikasi Sekarang
+    </a>
+</div>
+
+{{-- TOMBOL TAMBAH TAGIHAN --}}
+<div style="margin-bottom: 25px;">
+    <a href="{{ route('admin.pembayaran.create') }}" class="alert-btn" style="padding: 12px 24px; font-size: 14px;">
+        + Buat Tagihan Baru
     </a>
 </div>
 

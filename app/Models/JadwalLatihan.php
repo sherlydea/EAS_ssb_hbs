@@ -17,8 +17,14 @@ class JadwalLatihan extends Model
         'lokasi'
     ];
 
-    public function pelatih()
-    {
-        return $this->belongsTo(Pelatih::class, 'pelatih_id');
-    }
+   public function pelatih()
+{
+    return $this->belongsTo(Pelatih::class, 'pelatih_id');
+}
+
+public function user()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
+    
 }
